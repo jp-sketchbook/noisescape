@@ -3,7 +3,7 @@
     Properties
     {
         _Intensity ("Intensity", Range(0, 1)) = 0.1
-        _RaymarchingMod ("Raymarching Mod", Range(1, 10)) = 1
+        _RaymarchingMod ("Raymarching Mod", Range(0, 10)) = 1
         _ColorAnimMod ("Color Anim Mod", Range(1, 10)) = 1
     }
 
@@ -64,13 +64,14 @@
             }
 
             float GetDist(float3 p) {
-                float t = _Time;
-                float _i = _Intensity * _RaymarchingMod;
+                float t = _Time * (_RaymarchingMod*2) ;
+                float _i = _Intensity + _RaymarchingMod*_Intensity;
                 // Sphere
                 float sd = sdSphere(p, float4(0, 1, 0, 1));
                 // Plane
                 float pd = p.y;
                 float d = min(sd, pd);
+                // return d+sin(t);
                 return d+(sin(p.x*t)*_i)*(cos(p.y*t*.2)*_i); // Intensity sets glitchyness
             }
 
