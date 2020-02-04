@@ -2,6 +2,9 @@
 {
     Properties
     {
+        _Intensity ("Intensity", Range(0, 1)) = 0.1
+        _RaymarchingMod ("Raymarching Mod", Range(1, 10)) = 1
+        _ColorAnimMod ("Color Anim Mod", Range(1, 10)) = 1
     }
 
     SubShader
@@ -34,14 +37,15 @@
                 float3 hitPos : TEXCOORD2;
             };
 
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
+            float _Intensity;
+            float _RaymarchingMod;
+            float _ColorAnimMod;
 
             v2f vert (appdata v) 
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                o.uv = v.uv;
                 // Use world space origin
                  o.ro = _WorldSpaceCameraPos;
                 o.hitPos = mul(unity_ObjectToWorld, v.vertex);
@@ -61,17 +65,13 @@
 
             float GetDist(float3 p) {
                 float t = _Time;
+                float _i = _Intensity * _RaymarchingMod;
                 // Sphere
-                float sd = sdSphere(p, float4(0, 1, 3, 1));
+                float sd = sdSphere(p, float4(0, 1, 0, 1));
                 // Plane
                 float pd = p.y;
-                // Octahedron
-                // float3 octaPos = float3(1, 1, 1.2);
-                // float octaD = sdOctahedron(p - octaPos, .5);
-                
                 float d = min(sd, pd);
-                // d = min(d, octaD);
-                return d;
+                return d+(sin(p.x*t)*_i)*(cos(p.y*t*.2)*_i); // Intensity sets glitchyness
             }
 
             float RayMarch(float3 ro, float3 rd) {
@@ -97,6 +97,7 @@
 
             float GetLight(float3 p) {
                 float t = _Time;
+         
                 float3 lightPos = float3(0, 5, 2);
                 lightPos.x += sin(_Time)*20;
                 lightPos.z += cos(_Time)*20;
@@ -111,7 +112,8 @@
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float t = _Time;
+                float t = _Time * _ColorAnimMod;
+                float _i = _Intensity;
                 
                 float2 uv = i.uv-.5;
                 float3 ro = i.ro;
@@ -121,12 +123,8 @@
                 float3 p = ro + rd * d;
                 float dif = GetLight(p);
                 float3 col = dif;
-                float saturation = .4;
-                float brightness = .4;
 
-                float3 animCol = float3(sin(t), cos(t), sin(t)*-1);
-
-                col = lerp(col, normalize(animCol), saturation) + brightness;
+                col = lerp(col, p, sin(t)*_i);
 
                 fixed4 fragCol = 1;
                 fragCol.xyz = col.xyz;
