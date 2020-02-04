@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/_Noisescape/Scenes/Workbench.unity
+    guid: 4b43423ffb0054d4e887eb5df5542397
   m_configObjects: {}

@@ -1,10 +1,7 @@
-﻿Shader "Raymarching/GlitchyObject"
+﻿Shader "Raymarching/RaymarchOne"
 {
     Properties
     {
-        _Intensity ("Intensity", Range(0, 1)) = 0.1
-        _RaymarchingMod ("Raymarching Mod", Range(0, 10)) = 1
-        _ColorAnimMod ("Color Anim Mod", Range(0, 1)) = 0
     }
 
     SubShader
@@ -37,15 +34,14 @@
                 float3 hitPos : TEXCOORD2;
             };
 
-            float _Intensity;
-            float _RaymarchingMod;
-            float _ColorAnimMod;
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
 
             v2f vert (appdata v) 
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = v.uv;
+                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 // Use world space origin
                  o.ro = _WorldSpaceCameraPos;
                 o.hitPos = mul(unity_ObjectToWorld, v.vertex);
@@ -57,6 +53,34 @@
                 return length(p-s.xyz)-s.w; // s.w is radius of sphere
             }
 
+            // KEPT FOR REFERENCE - works in glsl example but not here? Typo?
+            // float sdCapsule(float3 p, float3 a, float3 b, float r) {
+            //     float3 ab = b-a;
+            //     float3 ap = p-a;
+            //     float t = dot(ab, ap) / dot(ab, ab);
+            //     t = clamp(t, 0., 1.);
+            //     float3 c = a + t*b;
+            //     return length(p-c)-r;
+            // }
+            
+            float sdCapsule(float3 p, float3 a, float3 b, float r )
+            {
+                float3 pa = p - a, ba = b - a;
+                float h = clamp(dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
+                return length(pa - ba*h ) - r;
+            }
+
+            float sdHexPrism(float3 p, float2 h)
+            {
+                const float3 k = float3(-0.8660254, 0.5, 0.57735);
+                p = abs(p);
+                p.xy -= 2.0*min(dot(k.xy, p.xy), 0.0)*k.xy;
+                float2 d = float2(
+                    length(p.xy-float2(clamp(p.x,-k.z*h.x,k.z*h.x), h.x))*sign(p.y-h.x),
+                    p.z-h.y );
+                return min(max(d.x,d.y),0.0) + length(max(d,0.0));
+            }
+
             float sdOctahedron(float3 p, float s)
             {
                 p = abs(p);
@@ -64,14 +88,30 @@
             }
 
             float GetDist(float3 p) {
-                float t = _Time * 12 * (_RaymarchingMod) ;
-                float _i = _Intensity + _RaymarchingMod*_Intensity;
-                // Sphere
-                float sd = sdSphere(p, float4(0, 1, 0, 1));
-                // Plane
-                float pd = p.y;
-                float d = min(sd, pd);
-                return d+(sin(p.x*t)*_i)*(cos(p.y*t*.2)*_i); // Intensity sets glitchyness
+                float t = _Time;
+                // Define some spheres
+                float4 s01 = float4(-.1, 1.8, 2, .3);
+                float4 s02 = float4(.8, .8, 3, .8);
+                // Get sphere distances
+                float sd01 = sdSphere(p, s01);
+                float sd02 = sdSphere(p, s02);
+                float spheresD = min(sd01, sd02);
+                // Simple plane
+                float planeDist = p.y;
+                // Capsule - removed for performance
+                // float capsuleD = sdCapsule(p, float3(-2, 1, 1), float3(-1, 2, 1), .2);
+                // Prism
+                float3 prismPos = float3(-.65, 1.2, 1.4);
+                float prismD = sdHexPrism(p - prismPos, float2(.2, .2));
+                // Octahedron
+                float3 octaPos = float3(1, 1, 1.2);
+                float octaD = sdOctahedron(p - octaPos, .5);
+                
+                float d = min(spheresD, planeDist);
+                // d = min(d, capsuleD);
+                d = min(d, prismD);
+                d = min(d, octaD);
+                return d;
             }
 
             float RayMarch(float3 ro, float3 rd) {
@@ -97,7 +137,6 @@
 
             float GetLight(float3 p) {
                 float t = _Time;
-         
                 float3 lightPos = float3(0, 5, 2);
                 lightPos.x += sin(_Time)*20;
                 lightPos.z += cos(_Time)*20;
@@ -112,8 +151,7 @@
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float t = _Time * _ColorAnimMod;
-                float _i = _Intensity;
+                float t = _Time;
                 
                 float2 uv = i.uv-.5;
                 float3 ro = i.ro;
@@ -123,11 +161,15 @@
                 float3 p = ro + rd * d;
                 float dif = GetLight(p);
                 float3 col = dif;
+                float saturation = .4;
+                float brightness = .4;
 
-                col = lerp(col, p, sin(t)*_i);
+                float3 animCol = float3(sin(t), cos(t), sin(t)*-1);
+
+                col = lerp(col, normalize(animCol), saturation) + brightness;
 
                 fixed4 fragCol = 1;
-                fragCol.xyz = lerp(dif, col.xyz, _i);
+                fragCol.xyz = col.xyz;
                 return fragCol;
             }
             ENDCG
