@@ -1,2 +1,4 @@
-# noisescape
-Noisy audiovisual landscape. Made in Unity for Oculus Quest.
+# Noisescape
+
+Audiovisual noise.
+Built in Unity for Oculus Quest.

@@ -64,7 +64,7 @@
             }
 
             float GetDist(float3 p) {
-                float t = _Time * (_RaymarchingMod*2) ;
+                float t = _Time * (_RaymarchingMod*3) ;
                 float _i = _Intensity + _RaymarchingMod*_Intensity;
                 // Sphere
                 float sd = sdSphere(p, float4(0, 1, 0, 1));
