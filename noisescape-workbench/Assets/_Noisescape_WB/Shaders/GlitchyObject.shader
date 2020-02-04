@@ -4,7 +4,7 @@
     {
         _Intensity ("Intensity", Range(0, 1)) = 0.1
         _RaymarchingMod ("Raymarching Mod", Range(0, 10)) = 1
-        _ColorAnimMod ("Color Anim Mod", Range(1, 10)) = 1
+        _ColorAnimMod ("Color Anim Mod", Range(0, 1)) = 0
     }
 
     SubShader
@@ -128,7 +128,7 @@
                 col = lerp(col, p, sin(t)*_i);
 
                 fixed4 fragCol = 1;
-                fragCol.xyz = col.xyz;
+                fragCol.xyz = lerp(dif, col.xyz, _i);
                 return fragCol;
             }
             ENDCG
