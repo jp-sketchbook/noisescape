@@ -47,7 +47,9 @@
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = v.uv;
                 // Use world space origin
-                 o.ro = _WorldSpaceCameraPos;
+                // o.ro = _WorldSpaceCameraPos;
+                // Set pos
+                o.ro = float3(0, 2, -4);
                 o.hitPos = mul(unity_ObjectToWorld, v.vertex);
                 return o;
             }
@@ -67,7 +69,7 @@
                 float t = _Time * 12 * (_RaymarchingMod) ;
                 float _i = _Intensity + _RaymarchingMod*_Intensity;
                 // Sphere
-                float sd = sdSphere(p, float4(0, 1, 0, 1));
+                float sd = sdSphere(p, float4(0, 1, 4, 1));
                 // Plane
                 float pd = p.y;
                 float d = min(sd, pd);
