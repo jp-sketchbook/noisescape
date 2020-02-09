@@ -66,7 +66,7 @@
             }
 
             float GetDist(float3 p) {
-                float t = _Time * 8 * (_RaymarchingMod); // Increases over time - seems more interesting
+                float t = _Time * 3 * (_RaymarchingMod); // Increases over time - seems more interesting
                 // float t = sin(_Time * _RaymarchingMod) * cos(_Time * _Intensity) * _Time; // Sine-based, smoother, also more sea-sick and boring :)
                 float _i = _Intensity + _RaymarchingMod*_Intensity;
                 // Sphere
