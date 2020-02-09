@@ -90,8 +90,8 @@
                     }
                 }
 
-                // float lfo = sin(t+uv.x) * cos(t+uv.y); // waves, smoother
-                float lfo = sin(t*uv.x) * cos(t*uv.y); // glitchier variant
+                float lfo = sin(t+uv.x) * cos(t+uv.y); // waves, smoother
+                // float lfo = sin(t*uv.x) * cos(t*uv.y); // glitchier variant
                 minDist = lerp(minDist, lfo, _Intensity*.24);
 
                 float3 col = minDist;
@@ -105,7 +105,7 @@
                 float4 brightenCol = _Brighten;
 
                 float4 fragCol = lerp(lineCol,cellCol,.5);
-                float4 posCol = float4(i.worldPos / 10);
+                float4 posCol = float4(i.worldPos / 3);
                 posCol.y *= -1;
                 fragCol = lerp(fragCol, posCol, _Intensity*.1);
                 fragCol += normalize(fragCol) * (_Brighten * _Intensity);

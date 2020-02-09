@@ -18,7 +18,7 @@
             #pragma fragment frag
 
             #define MAX_STEPS 100
-            #define MAX_DIST 100
+            #define MAX_DIST 64
             #define SURF_DIST 1e-3
 
             #include "UnityCG.cginc"
@@ -49,7 +49,7 @@
                 // Use world space origin
                 // o.ro = _WorldSpaceCameraPos;
                 // Set pos
-                o.ro = float3(0, 2, -4);
+                o.ro = float3(0, 3, -4);
                 o.hitPos = mul(unity_ObjectToWorld, v.vertex);
                 return o;
             }
@@ -69,7 +69,7 @@
                 float t = _Time * 12 * (_RaymarchingMod) ;
                 float _i = _Intensity + _RaymarchingMod*_Intensity;
                 // Sphere
-                float sd = sdSphere(p, float4(0, 1, 4, 1));
+                float sd = sdSphere(p, float4(0, 5, 8, 1));
                 // Plane
                 float pd = p.y;
                 float d = min(sd, pd);
@@ -100,9 +100,9 @@
             float GetLight(float3 p) {
                 float t = _Time;
          
-                float3 lightPos = float3(0, 5, 2);
-                lightPos.x += sin(_Time)*20;
-                lightPos.z += cos(_Time)*20;
+                float3 lightPos = float3(0, 10, 8);
+                lightPos.x += sin(t)*8;
+                lightPos.z += cos(t)*8;
                 float3 l = normalize(lightPos-p);
                 float3 n = GetNormal(p);
 
