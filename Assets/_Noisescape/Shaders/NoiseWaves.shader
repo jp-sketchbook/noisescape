@@ -3,6 +3,7 @@
     Properties
     {
         _Intensity ("Intensity", Range(0, 1)) = .5
+        _Speed ("Speed", Range (0, 1)) = .5
         _MainTex ("Texture", 2D) = "white" {}
     }
     SubShader
@@ -32,6 +33,7 @@
             };
 
             float _Intensity;
+            float _Speed;
             float4 _MainTex_ST;
 
             float rand(float2 co) {
@@ -50,9 +52,19 @@
             fixed4 frag (v2f i) : SV_Target
             {
                 float t = _Time;
-                float2 uv = i.uv * 10;
+                float s = 0.01 * _Speed;
+                float2 uv = i.uv;
+                // Make uv a pixely grid
+                uv *= 10;
                 float2 intPos = floor(uv);
-                float noiseMask = rand(intPos);
+                // Intensity blends noise masks
+                float2 intPosWave = intPos; // Intpos for wavy random mask
+                intPosWave.x += sin(t * s);
+                intPosWave.y += cos(t * s);
+                float noiseMaskWave = rand(intPosWave);
+                float noiseMaskFlicker = rand(intPos + sin(t));
+                // Blended with bias towards wavy noise
+                float noiseMask = lerp(noiseMaskWave, noiseMaskFlicker, _Intensity * .6);
                 float4 col = noiseMask;
                 return col;
             }
