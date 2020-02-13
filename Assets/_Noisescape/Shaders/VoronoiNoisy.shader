@@ -65,6 +65,8 @@
             float4 frag (v2f i) : SV_Target
             {
                 float2 uv = i.uv*2 - 1;
+                // uv *= 60;
+                // uv = floor(uv);
 
                 float t = _Time*_Speed;
                 float m = 0;

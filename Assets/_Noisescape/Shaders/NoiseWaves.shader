@@ -88,7 +88,8 @@
                 // Blended with bias towards wavy noise
                 float noiseMask = lerp(noiseMaskWave, noiseMaskFlicker, _i * .6);
                 noiseMask = lerp(1, noiseMask, _i * .6 + .2);
-                // float4 col = lightCol * noiseMask;
+
+                // ... and output color
                 float4 col = diffCol * noiseMask;
                 return col;
             }
