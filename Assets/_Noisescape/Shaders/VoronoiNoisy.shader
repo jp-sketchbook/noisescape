@@ -95,7 +95,6 @@
                 float lfo = sin(t+uv.x) * cos(t+uv.y); // waves, smoother
                 // float lfo = sin(t*uv.x) * cos(t*uv.y); // glitchier variant
                 minDist = lerp(minDist, lfo, _Intensity*.24);
-
                 float3 col = minDist;
                 float4 brightness = float4(col, 1);
                 float4 darkness = float4(1-col.x, 1-col.y, 1-col.z, 1);
