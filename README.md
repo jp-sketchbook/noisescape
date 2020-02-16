@@ -24,9 +24,9 @@ For fun. And I think there is room for more colors, noise and weirdness in VR en
 ## Credits
 
 Elaborating on ideas from tutorials by:
-[Art of Code](https://www.youtube.com/channel/UCcAlTqd9zID6aNX3TzwxJXg)
-[Freya Holmér](https://www.youtube.com/user/Acegikm0)
-[The Book of Shaders](https://thebookofshaders.com/)
+* [Art of Code](https://www.youtube.com/channel/UCcAlTqd9zID6aNX3TzwxJXg)
+* [Freya Holmér](https://www.youtube.com/user/Acegikm0)
+* [The Book of Shaders](https://thebookofshaders.com/)
 
 ## Wrapping up
 
